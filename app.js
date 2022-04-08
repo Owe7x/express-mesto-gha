@@ -25,4 +25,12 @@ app.use(userRouter);
 
 app.use(cardRouter);
 
-app.listen(PORT);
+app.all('*', (req, res) => {
+  res.status(404).send({ message: 'Ошибка 404. Страница не найдена' });
+});
+
+app.listen(PORT, () => {
+  // Если всё работает, консоль покажет, какой порт приложение слушает
+  // eslint-disable-next-line no-console
+  console.log(`App listening on port ${PORT}`);
+});
