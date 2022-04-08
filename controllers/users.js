@@ -15,12 +15,20 @@ module.exports.getAllUsers = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию.' }));
 };
 
-module.exports.getUserId = (req, res) => {
-  User.findById(req.params.userId)
-    .then((user) => res.send(user))
-    .catch(() => res.status(400).send({ message: ' Получение пользователя с некорректным id.' }))
-    .catch(() => res.status(404).send({ message: ' Пользователь по указанному _id не найден.' }))
-    .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию.' }));
+module.exports.getUserId = async (req, res) => {
+  try {
+    const getUserId = await User.findById(req.params.userId);
+    if (getUserId) {
+      res.status(200).send(getUserId);
+    } else {
+      return res.status(404).send({ message: 'Пользователь не найден' });
+    }
+  } catch (err) {
+    if (err.name === 'CastError') {
+      return res.status(400).send({ message: 'Некорректные данные пользователя' });
+    }
+    res.status(500).send({ message: 'Произошла ошибка сервера' });
+  }
 };
 
 module.exports.updateAvatarUser = (req, res) => {
