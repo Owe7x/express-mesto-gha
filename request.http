@@ -1,0 +1,33 @@
+GET http://localhost:3000/cards
+Content-Type: application/json
+
+###
+
+POST http://localhost:3000/cards
+Content-Type: application/json
+
+{
+  "name": "Alex",
+  "link": "https://www.zvezdi.ru/uploads/posts/2020-08/1596650388_1569316334_mjettju-makkonahi-33.jpg",
+  "owner": "6250876c4a92cdc319444c79"
+}
+
+###
+
+PATCH  http://localhost:3000/users/me
+Content-Type: application/json
+
+
+  {
+    "name": "Tim"
+  }
+
+###
+
+DELETE  http://localhost:3000/cards/6250a53e4bb7b9fddb46cf5c/likes
+Content-Type: application/json
+
+###
+
+PUT  http://localhost:3000/cards/6250a53e4bb7b9fddb46cf5c/likes
+Content-Type: application/json
