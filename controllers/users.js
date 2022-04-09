@@ -25,7 +25,7 @@ module.exports.getUserId = async (req, res) => {
       return res.status(404).send({ message: 'Пользователь не найден' });
     }
   } catch (err) {
-    if (err.name === 'SomeError') {
+    if (err.name === 'CastError') {
       return res.status(400).send({ message: 'Некорректные данные пользователя' });
     }
     res.status(500).send({ message: 'Произошла ошибка сервера' });

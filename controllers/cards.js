@@ -19,7 +19,7 @@ module.exports.getAllCards = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию. ' }));
 };
 
-module.exports.deleteCard = async (req, res) => {
+module.exports.deleteCardId = async (req, res) => {
   try {
     const cardDelete = await Card.findById(req.params.cardId);
     if (cardDelete) {
@@ -29,7 +29,8 @@ module.exports.deleteCard = async (req, res) => {
       return res.status(404).send({ message: 'Карточка не найдена' });
     }
   } catch (err) {
-    if (err.name === 'SomeError') {
+    console.log(err.name);
+    if (err.name === 'CastError') {
       return res.status(400).send({ message: 'Некорректные данные карточки' });
     }
     res.status(500).send({ message: 'Произошла ошибка сервера' });
@@ -45,7 +46,7 @@ module.exports.likeCard = async (req, res) => {
       return res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
     }
   } catch (err) {
-    if (err.name === 'SomeError') {
+    if (err.name === 'CastError') {
       return res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
     }
     res.status(500).send({ message: 'Ошибка по умолчанию.' });
@@ -61,7 +62,7 @@ module.exports.dislikeCard = async (req, res) => {
       return res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
     }
   } catch (err) {
-    if (err.name === 'SomeError') {
+    if (err.name === 'CastError') {
       return res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
     }
     res.status(500).send({ message: 'Ошибка по умолчанию.' });
