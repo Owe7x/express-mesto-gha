@@ -59,17 +59,15 @@ module.exports.likeCard = async (req, res) => {
 
 module.exports.dislikeCard = async (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
-      }
-      res.send({ data: card });
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
-      } else {
-        res.status(500).send({ message: 'Ошибка по умолчанию.' });
-      }
-    });
+    .orFail(new Error('NotValidId'))
+    .then((card) => res.send({ data: card })
+      .catch((err) => {
+        if (err.message === 'NotValidId') {
+          res.status(404).send({ message: 'Карточка не найдена' });
+        } else if (err.name === 'CastError') {
+          res.status(400).send({ message: 'Некорректный id карточки' });
+        } else {
+          res.status(500).send({ message: 'Произошла ошибка сервера' });
+        }
+      }));
 };
