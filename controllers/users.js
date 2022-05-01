@@ -1,17 +1,40 @@
 /* eslint-disable consistent-return */
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
 module.exports.createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-
-  User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
+    .then(() => res.status(200).send({ message: `Пользователь ${email} успешно создан` }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Некорректные данные' });
-      } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+      if (err.code === 11000) {
+        return res.status(409).send({ message: 'Такой пользователь уже существует' });
       }
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: err.message });
+      }
+      return res.status(500).send({ message: 'Произошла ошибка' });
+    });
+};
+module.exports.getUserMe = (req, res) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user._id) {
+        res.status(404).send({ message: 'Пользователь не найден' });
+      }
+      res.status(200).send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Некорректные данные пользователя' });
+      }
+      res.status(500).send({ message: 'Произошла ошибка сервера' });
     });
 };
 
@@ -72,5 +95,25 @@ module.exports.updateProfileUser = (req, res) => {
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }
+    });
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      // создадим токен
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+        sameSite: true,
+      });
+      res.status(201).send({ message: 'Авторизация успешна', token });
+    })
+    .catch((err) => {
+      res
+        .status(401)
+        .send({ message: err.message });
     });
 };
