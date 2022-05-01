@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
+const { errors } = require('celebrate');
 const userRouter = require('./routes/users');
 
 const cardRouter = require('./routes/cards');
@@ -30,14 +30,22 @@ app.use(userRouter);
 
 app.use(cardRouter);
 
-app.post('/signin', login);
-
-app.post('/signup', createUser);
-
 app.all('*', (req, res) => {
   res.status(404).send({ message: 'Ошибка 404. Страница не найдена' });
 });
+app.use(errors());
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
 
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
+  next();
+});
 app.listen(PORT, () => {
   // Если всё работает, консоль покажет, какой порт приложение слушает
   // eslint-disable-next-line no-console
