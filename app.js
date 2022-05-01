@@ -17,6 +17,8 @@ app.use(express.json());
 
 mongoose.connect('mongodb://localhost:27017/mestodb', { useNewUrlParser: true });
 
+app.use(auth);
+
 app.use(userRouter);
 
 app.use(cardRouter);
@@ -24,8 +26,6 @@ app.use(cardRouter);
 app.post('/signin', login);
 
 app.post('/signup', createUser);
-
-app.use(auth);
 
 app.all('*', (req, res) => {
   res.status(404).send({ message: 'Ошибка 404. Страница не найдена' });
