@@ -23,7 +23,20 @@ module.exports.getAllCards = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Ошибка по умолчанию. ' }));
 };
 
-module.exports.deleteCardId = async (req, res) => {
+module.exports.deleteCardId = async (req, res, next) => {
+  const { cardId } = req.params;
+  Card.findById(cardId)
+    .then((card) => {
+      if (!card) {
+        return res.status(404).send({ message: 'Карточка с этим ID не найдена' });
+      }
+      if (!card.owner.equals(req.user._id)) {
+        return res.status(403).send({ message: 'Нельзя удалить чужую карточку' });
+      }
+      return card.remove()
+        .then(() => res.send({ message: 'Карточка удалена' }));
+    }).catch(next);
+
   try {
     const cardDelete = await Card.findById(req.params.cardId);
     if (cardDelete) {
