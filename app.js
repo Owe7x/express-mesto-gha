@@ -6,8 +6,6 @@ const userRouter = require('./routes/users');
 
 const cardRouter = require('./routes/cards');
 
-const { createUser, login } = require('./controllers/users');
-
 const auth = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
