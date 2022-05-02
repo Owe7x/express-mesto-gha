@@ -11,7 +11,11 @@ module.exports.createUser = (req, res) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then(() => res.status(200).send({ message: `Пользователь ${email} успешно создан` }))
+    .then(() => res.status(200).send({
+      data: {
+        name, about, avatar, email,
+      },
+    }))
     .catch((err) => {
       if (err.code === 11000) {
         return res.status(409).send({ message: 'Такой пользователь уже существует' });
@@ -25,7 +29,7 @@ module.exports.createUser = (req, res) => {
 module.exports.getUserMe = (req, res) => {
   User.findById(req.user._id)
     .then((user) => {
-      if (!user._id) {
+      if (!user) {
         return res.status(404).send({ message: 'Пользователь не найден' });
       }
       return res.status(200).send(user);
@@ -45,19 +49,19 @@ module.exports.getAllUsers = (req, res) => {
 };
 
 module.exports.getUserId = async (req, res) => {
-  try {
-    const getUserId = await User.findById(req.params.userId);
-    if (getUserId) {
-      res.status(200).send(getUserId);
-    } else {
-      return res.status(404).send({ message: 'Пользователь не найден' });
-    }
-  } catch (err) {
-    if (err.name === 'CastError') {
-      return res.status(400).send({ message: 'Некорректные данные пользователя' });
-    }
-    res.status(500).send({ message: 'Произошла ошибка сервера' });
-  }
+  User.findById(req.params.id)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: 'Пользователь не найден' });
+      }
+      res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send({ message: 'Некорректные данные пользователя' });
+      }
+      res.status(500).send({ message: 'Произошла ошибка сервера' });
+    });
 };
 
 module.exports.updateAvatarUser = (req, res) => {
