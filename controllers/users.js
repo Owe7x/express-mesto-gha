@@ -130,18 +130,23 @@ module.exports.updateProfileUser = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    next(new BadRequestError('Требуется ввести почту; и пароль'));
+    next(new BadRequestError('Требуется ввести почту и пароль'));
   }
   User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        'secret1993key',
-        { expiresIn: '7d' },
-      );
+      // создадим токен
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+        sameSite: true,
+      });
       return res.status(200).send({ token });
     })
-    .catch(() => {
-      next(new AuthorizedError('Ошибка авторизации: неправильная почта или пароль'));
+    .catch((err) => {
+      if (err.message === 'IncorrectEmail') {
+        next(new AuthorizedError('Не правильный логин или пароль'));
+      }
+      next(err);
     });
 };
