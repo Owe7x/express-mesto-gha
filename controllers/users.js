@@ -26,15 +26,15 @@ module.exports.getUserMe = (req, res) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user._id) {
-        res.status(404).send({ message: 'Пользователь не найден' });
+        return res.status(404).send({ message: 'Пользователь не найден' });
       }
-      res.status(200).send(user);
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Некорректные данные пользователя' });
+        return res.status(400).send({ message: 'Некорректные данные пользователя' });
       }
-      res.status(500).send({ message: 'Произошла ошибка сервера' });
+      return res.status(500).send({ message: 'Произошла ошибка сервера' });
     });
 };
 
@@ -109,7 +109,7 @@ module.exports.login = (req, res) => {
         httpOnly: true,
         sameSite: true,
       });
-      res.status(201).send({ message: 'Авторизация успешна', token });
+      res.status(200).send({ message: 'Авторизация успешна', token });
     })
     .catch((err) => {
       res
