@@ -138,6 +138,9 @@ module.exports.login = (req, res, next) => {
       res.status(200).send({ message: 'Авторизация успешна', token });
     })
     .catch((err) => {
-      next(new AuthorizedError(err.message));
+      if (err.message === 'IncorrectEmail') {
+        next(new AuthorizedError('Не правильный логин или пароль'));
+      }
+      next(err);
     });
 };
