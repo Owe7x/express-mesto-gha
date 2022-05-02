@@ -11,6 +11,9 @@ module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
+  if (!email || !password) {
+    next(new BadRequestError('Не переданы email или пароль'));
+  }
   User.findOne({ email })
     .then((user) => {
       if (user) {
@@ -126,7 +129,10 @@ module.exports.updateProfileUser = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
+  if (!email || !password) {
+    next(new BadRequestError('Требуется ввести почту и пароль'));
+  }
+  User.findUserByCredentials(email, password)
     .then((user) => {
       // создадим токен
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
@@ -135,12 +141,9 @@ module.exports.login = (req, res, next) => {
         httpOnly: true,
         sameSite: true,
       });
-      res.status(200).send({ message: 'Авторизация успешна', token });
+      return res.status(200).send({ token });
     })
-    .catch((err) => {
-      if (err.message === 'IncorrectEmail') {
-        next(new AuthorizedError('Не правильный логин или пароль'));
-      }
-      next(err);
+    .catch(() => {
+      next(new AuthorizedError('Ошибка авторизации: неправильная почта или пароль'));
     });
 };
