@@ -6,8 +6,6 @@ const userRouter = require('./routes/users');
 
 const cardRouter = require('./routes/cards');
 
-const auth = require('./middlewares/auth');
-
 const { PORT = 3000 } = process.env;
 
 const app = express();
@@ -22,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(require('./routes/auth'));
 
-app.use(auth);
+app.use(require('./middlewares/auth'));
 
 app.use(userRouter);
 
