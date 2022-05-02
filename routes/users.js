@@ -9,13 +9,13 @@ const { getAllUsers, getUserId, updateProfileUser, updateAvatarUser, getUserMe }
 
 userRouter.get('/users/:userId', celebrate({
   params: Joi.object().keys({
-    id: Joi.string().length(24).hex().required(),
+    userId: Joi.string().length(24).hex(),
   }),
 }), getUserId);
 
 userRouter.get('/users/', getUserMe);
 
-userRouter.get('/users', getAllUsers);
+userRouter.get('/', getAllUsers);
 
 userRouter.patch('/users/me', celebrate({
   body: Joi.object().keys({
