@@ -5,7 +5,7 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
 const BadRequestError = require('../errors/BadRequestError');
-const AuthorizedError = require('../errors/AuthorizedError');
+const Unauthorized = require('../errors/Unauthorized');
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -45,10 +45,10 @@ module.exports.createUser = (req, res, next) => {
 module.exports.getUserMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
-      if (!user._id) {
-        next(new NotFoundError('Пользователь не найден'));
+      if (!user) {
+        next(new NotFoundError('Данные пользователя не найдены'));
       }
-      res.status(200).send(user);
+      res.status(200).send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -145,7 +145,7 @@ module.exports.login = (req, res, next) => {
     })
     .catch((err) => {
       if (err.message === 'IncorrectEmail') {
-        next(new AuthorizedError('Не правильный логин или пароль'));
+        next(new Unauthorized('Не правильный логин или пароль'));
       }
       next(err);
     });
