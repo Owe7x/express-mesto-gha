@@ -13,9 +13,9 @@ userRouter.get('/users/:userId', celebrate({
   }),
 }), getUserId);
 
-userRouter.get('/users/', getUserMe);
+userRouter.get('/users/me', getUserMe);
 
-userRouter.get('/', getAllUsers);
+userRouter.get('/users', getAllUsers);
 
 userRouter.patch('/users/me', celebrate({
   body: Joi.object().keys({
