@@ -143,10 +143,7 @@ module.exports.login = (req, res, next) => {
       });
       return res.status(200).send({ token });
     })
-    .catch((err) => {
-      if (err.message === 'IncorrectEmail') {
-        next(new Unauthorized('Не правильный логин или пароль'));
-      }
-      next(err);
+    .catch(() => {
+      next(new Unauthorized('Не правильный логин или пароль'));
     });
 };

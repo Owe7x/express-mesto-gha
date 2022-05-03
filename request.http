@@ -1,17 +1,14 @@
-GET http://localhost:3000/users/getUserMe
+GET http://localhost:3000/users/me
 Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/users
+POST http://localhost:3000/signin
 Content-Type: application/json
 
 {
-  "name": "Artutio",
-  "avatar": "https://www.zvezdi.ru/uploads/posts/2020-08/1596650388_1569316334_mjettju-makkonahi-33.jpg",
-  "about": "Me about ,e",
-  "email": "tsaeng@mail.ru",
-  "password": "829348asdad29340"
+  "email": "teng@mail.ru",
+  "password": "82934829340"
 }
 
 ###
@@ -39,3 +36,4 @@ Content-Type: application/json
 
 ###
 POST http://localhost:3000/signin
+Content-Type: application/json
