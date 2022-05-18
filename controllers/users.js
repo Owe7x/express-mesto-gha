@@ -90,7 +90,7 @@ module.exports.updateAvatarUser = (req, res, next) => {
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail(() => {
-      throw new BadRequestError('Переданы некорректные данные');
+      throw new NotFoundError('Переданы некорректные данные');
     })
     .then((user) => {
       if (!user) {
@@ -111,7 +111,7 @@ module.exports.updateProfileUser = (req, res, next) => {
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(() => {
-      throw new BadRequestError('Переданы некорректные данные');
+      throw new NotFoundError('Переданы некорректные данные');
     })
     .then((user) => {
       if (!user) {

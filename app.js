@@ -3,11 +3,13 @@ const mongoose = require('mongoose');
 const { celebrate, Joi } = require('celebrate');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
+const cors = require('cors');
 const { login, createUser } = require('./controllers/users');
 const userRouter = require('./routes/users');
 const auth = require('./middlewares/auth');
 const cardRouter = require('./routes/cards');
 const NotFoundError = require('./errors/NotFoundError');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -16,7 +18,18 @@ mongoose.connect('mongodb://localhost:27017/mestodb', { useNewUrlParser: true })
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(requestLogger);
 
+app.use(cors({
+  origin: 'http://api.owe7x.nomoreparties.sbs/',
+  credentials: true,
+}));
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
 app.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),
@@ -47,7 +60,7 @@ app.use(auth, cardRouter);
 app.use('*', auth, (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
-
+app.use(errorLogger);
 app.use(errors());
 
 app.use((err, req, res, next) => {

@@ -1,4 +1,4 @@
-GET http://localhost:3000/users/me
+GET http://localhost:3000/users
 Content-Type: application/json
 
 ###
@@ -7,8 +7,8 @@ POST http://localhost:3000/signin
 Content-Type: application/json
 
 {
-  "email": "teng@mail.ru",
-  "password": "82934829340"
+  "email": "tengia@mail.ru",
+  "password": "123456789"
 }
 
 ###
