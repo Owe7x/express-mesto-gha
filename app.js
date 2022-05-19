@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger);
 
 app.use(cors({
-  origin: 'http://api.owe7x.nomoreparties.sbs/',
+  origin: 'http://owe7x.nomoredomains.xyz',
   credentials: true,
 }));
 
