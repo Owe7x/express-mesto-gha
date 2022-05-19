@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const { celebrate, Joi } = require('celebrate');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
-/* const cors = require('cors'); */
+const cors = require('cors');
 const { login, createUser } = require('./controllers/users');
 const userRouter = require('./routes/users');
 const auth = require('./middlewares/auth');
@@ -26,15 +26,7 @@ const allowedCors = [
   'localhost:3000',
 ];
 
-app.use((req, res, next) => {
-  const { origin } = req.headers; // Сохраняем источник запроса в переменную origin
-  // проверяем, что источник запроса есть среди разрешённых
-  if (allowedCors.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-
-  next();
-});
+app.use(cors());
 
 app.get('/crash-test', () => {
   setTimeout(() => {
