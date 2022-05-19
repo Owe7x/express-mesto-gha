@@ -20,12 +20,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger);
 
-const allowedCors = [
-  'http://owe7x.nomoredomains.xyz',
-  'https://owe7x.nomoredomains.xyz',
-  'localhost:3000',
-];
-
 app.use(cors());
 
 app.get('/crash-test', () => {
