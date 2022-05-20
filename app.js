@@ -65,8 +65,8 @@ app.post(
   createUser,
 );
 
-app.use(auth, userRouter);
-app.use(auth, cardRouter);
+app.use(userRouter);
+app.use(cardRouter);
 
 app.use('*', auth, (req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
