@@ -6,7 +6,7 @@ const userRouter = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const { validateUrl } = require('../utils/validationUrl');
 const { getAllUsers, getUserId, updateProfileUser, updateAvatarUser, getUserMe } = require('../controllers/users');
-/* const auth = require('../middlewares/auth'); */
+const auth = require('../middlewares/auth');
 
 userRouter.get('/users/me', getUserMe);
 
@@ -16,7 +16,7 @@ userRouter.get('/users/:userId', celebrate({
   }),
 }), getUserId);
 
-userRouter.get('/users', getAllUsers);
+userRouter.get('/users', auth, getAllUsers);
 
 userRouter.patch('/users/me', celebrate({
   body: Joi.object().keys({
