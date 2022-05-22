@@ -1,6 +1,8 @@
 /* eslint-disable consistent-return */
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const ConflictError = require('../errors/ConflictError');
@@ -48,7 +50,7 @@ module.exports.getUserMe = (req, res, next) => {
       if (!user) {
         next(new NotFoundError('Данные пользователя не найдены'));
       }
-      res.status(200).send({ data: user });
+      res.status(200).send({ user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -96,7 +98,7 @@ module.exports.updateAvatarUser = (req, res, next) => {
       if (!user) {
         next(new BadRequestError('Переданы некорректные данные'));
       }
-      res.status(200).send({ data: user });
+      res.status(200).send({ user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -117,7 +119,7 @@ module.exports.updateProfileUser = (req, res, next) => {
       if (!user) {
         next(new BadRequestError('Переданы некорректные данные'));
       }
-      res.status(200).send({ data: user });
+      res.status(200).send({ user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -135,7 +137,7 @@ module.exports.login = (req, res, next) => {
   User.findUserByCredentials(email, password)
     .then((user) => {
       // создадим токен
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
